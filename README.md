@@ -1,4 +1,5 @@
-# calm-ledger-app
+# fake-folio
+Totally fake app just for demo purposes
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
 
