@@ -62,27 +62,39 @@ jobs:
               }
             ' -f owner="$OWNER" -f repo="$REPO" -F issue="$ISSUE_NUM" \
               --jq '.data.repository.issue.projectItems.nodes[0].fieldValues.nodes[] | select(.field.name == "Status") | .name' \
-              2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "plan")
+              2>/dev/null | tr '[:upper:]' '[:lower:]' | tr -d '\r' | head -n1 || true)
 
-            echo "phase=${PHASE:-plan}" >> $GITHUB_OUTPUT
+            PHASE=${PHASE:-plan}
+            echo "phase=$PHASE" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Post "launching" comment
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_RAW: ${{ steps.get-phase.outputs.issue }}
+          PHASE_RAW: ${{ steps.get-phase.outputs.phase }}
         run: |
-          gh issue comment "${{ steps.get-phase.outputs.issue }}" \
-            --repo "${{ github.repository }}" \
-            --body "🤖 **AIDLC Agent launching** for phase: \`${{ steps.get-phase.outputs.phase }}\`. The agent will post a summary when complete."
+          set -euo pipefail
+          ISSUE=$(printf '%s' "$ISSUE_RAW" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+          PHASE=$(printf '%s' "$PHASE_RAW" | tr -d '\r\n' | head -n1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+          PHASE=${PHASE:-plan}
+          BODY=$(mktemp)
+          printf '%s\n\n%s\n' "🤖 **AIDLC Agent launching** for phase: \`${PHASE}\`." "The agent will post a summary when complete." > "$BODY"
+          gh issue comment "$ISSUE" --body-file "$BODY"
+          rm -f "$BODY"
 
       - name: Swap labels (unstarted → in_progress)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_RAW: ${{ steps.get-phase.outputs.issue }}
         run: |
-          gh issue edit "${{ steps.get-phase.outputs.issue }}" \
+          set -euo pipefail
+          ISSUE=$(printf '%s' "$ISSUE_RAW" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+          gh issue edit "$ISSUE" \
             --remove-label "aidlc_work:unstarted" \
-            --add-label "aidlc_work:in_progress" \
-            --repo "${{ github.repository }}"
+            --add-label "aidlc_work:in_progress"
 
       - name: Launch Cursor Cloud Agent
         id: launch-agent
