@@ -1,0 +1,200 @@
+# Triggers when aidlc_work:unstarted label is applied to an issue.
+# Reads the project board phase, launches a Cursor Cloud Agent for that phase.
+
+name: AIDLC Agent Launch
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to process'
+        required: true
+      phase:
+        description: 'Phase to run (plan/design/build/review)'
+        required: true
+
+jobs:
+  launch-agent:
+    if: github.event.label.name == 'aidlc_work:unstarted' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Determine phase from project board
+        id: get-phase
+        env:
+          GH_TOKEN: ${{ secrets.AIDLC_PROJECT_PAT }}
+        run: |
+          # For manual dispatch, use the provided phase
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "phase=${{ github.event.inputs.phase }}" >> $GITHUB_OUTPUT
+            echo "issue=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
+          else
+            echo "issue=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+            # Query the project board to find which column this issue is in
+            # This requires AIDLC_PROJECT_PAT with project scope
+            ISSUE_NUM="${{ github.event.issue.number }}"
+            OWNER="${{ github.repository_owner }}"
+            REPO="${{ github.event.repository.name }}"
+
+            # Get project status field for this issue via GraphQL
+            PHASE=$(gh api graphql -H "Authorization: token $GH_TOKEN" -f query='
+              query($owner: String!, $repo: String!, $issue: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  issue(number: $issue) {
+                    projectItems(first: 5) {
+                      nodes {
+                        fieldValues(first: 10) {
+                          nodes {
+                            ... on ProjectV2ItemFieldSingleSelectValue {
+                              name
+                              field { ... on ProjectV2SingleSelectField { name } }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ' -f owner="$OWNER" -f repo="$REPO" -F issue="$ISSUE_NUM" \
+              --jq '.data.repository.issue.projectItems.nodes[0].fieldValues.nodes[] | select(.field.name == "Status") | .name' \
+              2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "plan")
+
+            echo "phase=${PHASE:-plan}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Post "launching" comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ steps.get-phase.outputs.issue }} \
+            --body "🤖 **AIDLC Agent launching** for phase: \`${{ steps.get-phase.outputs.phase }}\`
+          The agent will post a summary when complete." \
+            --repo ${{ github.repository }}
+
+      - name: Swap labels (unstarted → in_progress)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ steps.get-phase.outputs.issue }} \
+            --remove-label "aidlc_work:unstarted" \
+            --add-label "aidlc_work:in_progress" \
+            --repo ${{ github.repository }}
+
+      - name: Launch Cursor Cloud Agent
+        id: launch-agent
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+        run: |
+          PHASE="${{ steps.get-phase.outputs.phase }}"
+          ISSUE="${{ steps.get-phase.outputs.issue }}"
+          REPO="${{ github.repository }}"
+          REPO_URL="https://github.com/${REPO}"
+
+          # Build the prompt for this phase
+          PROMPT="You are running the AIDLC /${PHASE} skill for GitHub issue #${ISSUE} in ${REPO}.
+
+          1. Read .claude/skills/${PHASE}/SKILL.md for instructions.
+          2. Read the issue body: run \`gh issue view ${ISSUE}\` to get full details.
+          3. Execute the skill exactly as specified — do NOT proceed to the next phase.
+          4. When complete, post a summary comment on the issue using \`gh issue comment ${ISSUE} --body '...'\`
+          5. Clear the in_progress label: \`gh issue edit ${ISSUE} --remove-label aidlc_work:in_progress\`
+
+          HARD STOP: Only execute the ${PHASE} phase. Do not plan AND build in one run."
+
+          # Call Cursor Cloud Agent API
+          RESPONSE=$(curl -sS -X POST "https://api.cursor.com/v1/agents" \
+            -u "$CURSOR_API_KEY:" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"prompt\": {
+                \"text\": $(echo "$PROMPT" | jq -Rs .)
+              },
+              \"repos\": [
+                {
+                  \"url\": \"${REPO_URL}\"
+                }
+              ]
+            }")
+
+          echo "$RESPONSE"
+
+          if echo "$RESPONSE" | jq -e '.error' >/dev/null; then
+            echo "Cursor API returned an error."
+            exit 1
+          fi
+
+          AGENT_ID=$(echo "$RESPONSE" | jq -r '.agent.id // empty')
+          RUN_ID=$(echo "$RESPONSE" | jq -r '.run.id // empty')
+          AGENT_URL=$(echo "$RESPONSE" | jq -r '.agent.url // empty')
+
+          if [ -z "$AGENT_ID" ] || [ -z "$RUN_ID" ]; then
+            echo "Missing agent or run id in Cursor API response."
+            exit 1
+          fi
+
+          echo "agent_id=$AGENT_ID" >> "$GITHUB_OUTPUT"
+          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "agent_url=$AGENT_URL" >> "$GITHUB_OUTPUT"
+
+          echo "Launched agent: $AGENT_ID"
+          echo "Initial run: $RUN_ID"
+          echo "Agent URL: $AGENT_URL"
+
+      - name: Monitor initial run status
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+        run: |
+          AGENT_ID="${{ steps.launch-agent.outputs.agent_id }}"
+          RUN_ID="${{ steps.launch-agent.outputs.run_id }}"
+          AGENT_URL="${{ steps.launch-agent.outputs.agent_url }}"
+
+          echo "Tracking Cursor run status..."
+          echo "Agent URL: ${AGENT_URL}"
+
+          MAX_ATTEMPTS=180
+          SLEEP_SECONDS=10
+
+          for ATTEMPT in $(seq 1 $MAX_ATTEMPTS); do
+            RESPONSE=$(curl -sS -X GET "https://api.cursor.com/v1/agents/${AGENT_ID}/runs/${RUN_ID}" \
+              -u "$CURSOR_API_KEY:")
+            echo "Poll ${ATTEMPT}/${MAX_ATTEMPTS}: $RESPONSE"
+
+            if echo "$RESPONSE" | jq -e '.error' >/dev/null; then
+              echo "Cursor API returned an error while polling run."
+              exit 1
+            fi
+
+            STATUS=$(echo "$RESPONSE" | jq -r '.status // empty')
+            if [ -z "$STATUS" ]; then
+              echo "Missing run status in polling response."
+              exit 1
+            fi
+
+            case "$STATUS" in
+              FINISHED)
+                echo "Cursor run finished successfully."
+                exit 0
+                ;;
+              FAILED|CANCELLED)
+                echo "Cursor run ended with terminal status: $STATUS"
+                exit 1
+                ;;
+              CREATING|RUNNING)
+                sleep "$SLEEP_SECONDS"
+                ;;
+              *)
+                echo "Unexpected run status: $STATUS"
+                exit 1
+                ;;
+            esac
+          done
+
+          echo "Timed out waiting for Cursor run to finish after 30 minutes."
+          echo "Agent is still accessible at: ${AGENT_URL}"
+          echo "Treating timeout as non-fatal so work can continue asynchronously."
+          exit 0
