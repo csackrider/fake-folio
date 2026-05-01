@@ -10,7 +10,7 @@
 | Field | Value |
 |-------|-------|
 | **Feature** | Update all current "Personal finance, simplified" copy to "Imaginary Personal finance, simplified" |
-| **Status** | Awaiting approval |
+| **Status** | Approved |
 | **Author** | Cursor Cloud Agent |
 | **Created** | 2026-05-01 |
 | **Last updated** | 2026-05-01 |
@@ -108,6 +108,7 @@ This is a small but visible brand-consistency improvement. It reduces mismatch b
 | 2026-05-01 | Approved UI scope includes the sidebar plus the sign-in, sign-up, and sign-up success pages. |
 | 2026-05-01 | Auth pages remain in scope even before Supabase is enabled so they are ready for future auth rollout. |
 | 2026-05-01 | Related browser tab metadata and installed-app/PWA naming are included in scope for this rename. |
+| 2026-05-01 | Product Spec approved in chat; `/plan` is complete and ready for later handoff to `/design`. |
 
 ## Related documents
 
