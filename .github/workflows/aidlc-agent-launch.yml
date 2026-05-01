@@ -71,19 +71,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue comment ${{ steps.get-phase.outputs.issue }} \
-            --body "🤖 **AIDLC Agent launching** for phase: \`${{ steps.get-phase.outputs.phase }}\`
-          The agent will post a summary when complete." \
-            --repo ${{ github.repository }}
+          gh issue comment "${{ steps.get-phase.outputs.issue }}" \
+            --repo "${{ github.repository }}" \
+            --body "🤖 **AIDLC Agent launching** for phase: \`${{ steps.get-phase.outputs.phase }}\`. The agent will post a summary when complete."
 
       - name: Swap labels (unstarted → in_progress)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue edit ${{ steps.get-phase.outputs.issue }} \
+          gh issue edit "${{ steps.get-phase.outputs.issue }}" \
             --remove-label "aidlc_work:unstarted" \
             --add-label "aidlc_work:in_progress" \
-            --repo ${{ github.repository }}
+            --repo "${{ github.repository }}"
 
       - name: Launch Cursor Cloud Agent
         id: launch-agent
