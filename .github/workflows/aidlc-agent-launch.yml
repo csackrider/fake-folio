@@ -28,20 +28,28 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.AIDLC_PROJECT_PAT }}
         run: |
-          # For manual dispatch, use the provided phase
+          allowlist_phase() {
+            p=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | head -c32)
+            case "$p" in
+              plan|design|build|review|ship) printf '%s' "$p" ;;
+              *) printf '%s' "plan" ;;
+            esac
+          }
+
+          # For manual dispatch, use the provided phase (allowlisted only)
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "phase=${{ github.event.inputs.phase }}" >> $GITHUB_OUTPUT
-            echo "issue=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
+            PHASE=$(allowlist_phase "${{ github.event.inputs.phase }}")
+            echo "phase=$PHASE" >> "$GITHUB_OUTPUT"
+            echo "issue=${{ github.event.inputs.issue_number }}" >> "$GITHUB_OUTPUT"
           else
-            echo "issue=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
-            # Query the project board to find which column this issue is in
-            # This requires AIDLC_PROJECT_PAT with project scope
+            echo "issue=${{ github.event.issue.number }}" >> "$GITHUB_OUTPUT"
+            # Project board → phase. PAT must read Projects (classic: read:project;
+            # fine-grained: Projects → Read on the account that owns the project).
             ISSUE_NUM="${{ github.event.issue.number }}"
             OWNER="${{ github.repository_owner }}"
             REPO="${{ github.event.repository.name }}"
 
-            # Get project status field for this issue via GraphQL
-            PHASE=$(gh api graphql -H "Authorization: token $GH_TOKEN" -f query='
+            RAW=$(gh api graphql -H "Authorization: token $GH_TOKEN" -f query='
               query($owner: String!, $repo: String!, $issue: Int!) {
                 repository(owner: $owner, name: $repo) {
                   issue(number: $issue) {
@@ -60,11 +68,11 @@ jobs:
                   }
                 }
               }
-            ' -f owner="$OWNER" -f repo="$REPO" -F issue="$ISSUE_NUM" \
-              --jq '.data.repository.issue.projectItems.nodes[0].fieldValues.nodes[] | select(.field.name == "Status") | .name' \
-              2>/dev/null | tr '[:upper:]' '[:lower:]' | tr -d '\r' | head -n1 || true)
+            ' -f owner="$OWNER" -f repo="$REPO" -F issue="$ISSUE_NUM" 2>/dev/null || true)
 
-            PHASE=${PHASE:-plan}
+            # jq only: never pass raw GraphQL (e.g. error JSON) into GITHUB_OUTPUT
+            PHASE=$(printf '%s' "$RAW" | jq -r '[.data.repository.issue.projectItems.nodes[]?.fieldValues.nodes[]? | select(.field.name == "Status") | .name] | first // empty | ascii_downcase' 2>/dev/null || true)
+            PHASE=$(allowlist_phase "$PHASE")
             echo "phase=$PHASE" >> "$GITHUB_OUTPUT"
           fi
 
@@ -77,8 +85,8 @@ jobs:
         run: |
           set -euo pipefail
           ISSUE=$(printf '%s' "$ISSUE_RAW" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-          PHASE=$(printf '%s' "$PHASE_RAW" | tr -d '\r\n' | head -n1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-          PHASE=${PHASE:-plan}
+          PHASE=$(printf '%s' "$PHASE_RAW" | tr '[:upper:]' '[:lower:]' | tr -d '\r\n' | head -n1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | head -c32)
+          case "$PHASE" in plan|design|build|review|ship) ;; *) PHASE=plan ;; esac
           BODY=$(mktemp)
           printf '%s\n\n%s\n' "🤖 **AIDLC Agent launching** for phase: \`${PHASE}\`." "The agent will post a summary when complete." > "$BODY"
           gh issue comment "$ISSUE" --body-file "$BODY"
@@ -101,8 +109,12 @@ jobs:
         env:
           CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
         run: |
-          PHASE="${{ steps.get-phase.outputs.phase }}"
-          ISSUE="${{ steps.get-phase.outputs.issue }}"
+          set -euo pipefail
+          PHASE_RAW="${{ steps.get-phase.outputs.phase }}"
+          ISSUE_RAW="${{ steps.get-phase.outputs.issue }}"
+          PHASE=$(printf '%s' "$PHASE_RAW" | tr '[:upper:]' '[:lower:]' | tr -d '\r\n' | head -c32)
+          case "$PHASE" in plan|design|build|review|ship) ;; *) PHASE=plan ;; esac
+          ISSUE=$(printf '%s' "$ISSUE_RAW" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
           REPO="${{ github.repository }}"
           REPO_URL="https://github.com/${REPO}"
 

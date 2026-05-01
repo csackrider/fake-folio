@@ -41,6 +41,8 @@ Convention: `feature/<kebab-slug>/`
 
 **Repository secrets to configure:** `AIDLC_PROJECT_PAT`, `CURSOR_API_KEY` (and ensure GitHub Issues labels `aidlc_work:unstarted` / `aidlc_work:in_progress` exist).
 
+**`AIDLC_PROJECT_PAT` scopes:** The GraphQL query reads **issue → projectItems** (Project v2). If the token lacks access, the API returns *resource not accessible by personal access token* and the workflow falls back to phase **`plan`**. To read the real board column, use a PAT that can read projects — e.g. **classic:** include **`read:project`** (often together with **`repo`**); **fine-grained:** grant **Projects → Read** for the account that owns the project (user or org), plus repository **Issues** / **Metadata** as needed.
+
 ## Notes for agents
 
 - Run `npm run build` before opening a PR when the change touches app code.
