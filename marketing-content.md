@@ -1,6 +1,6 @@
-# Tallyr - Marketing Content
+# FakeFolio - Marketing Content
 
-A collection of marketing deliverables for promoting the Tallyr template on v0.
+A collection of marketing deliverables for promoting the FakeFolio template on v0.
 
 ---
 
@@ -14,14 +14,14 @@ A collection of marketing deliverables for promoting the Tallyr template on v0.
 
 ## v0 Template Description
 
-**Title:** Tallyr - Personal Finance Tracker for Couples
+**Title:** FakeFolio - Personal Finance Tracker for Couples
 
 **Short Description (under 160 characters):**
 A minimal, calm personal finance tracker for households. Track recurring charges, budgets, and spending with multi-person support and dark mode.
 
 **Full Description:**
 
-Tallyr is a beautifully minimal personal finance dashboard designed for couples, housemates, or families who share expenses. Built with Next.js 16, Tailwind CSS, and shadcn/ui components.
+FakeFolio is a beautifully minimal personal finance dashboard designed for couples, housemates, or families who share expenses. Built with Next.js 16, Tailwind CSS, and shadcn/ui components.
 
 **Features:**
 - Dashboard with income, recurring charges, and upcoming payments
@@ -54,7 +54,7 @@ Tallyr is a beautifully minimal personal finance dashboard designed for couples,
 
 ### Launch Post
 ```
-Just shipped Tallyr - a minimal personal finance tracker built for households.
+Just shipped FakeFolio - a minimal personal finance tracker built for households.
 
 Built entirely with @v0:
 - Add unlimited household members
@@ -70,7 +70,7 @@ Try the template: [INSERT_V0_TEMPLATE_URL]
 ```
 The hardest part of budgeting with others? Knowing who pays what.
 
-Tallyr lets you add unlimited household members and assign expenses to anyone - or mark them as shared (splits equally).
+FakeFolio lets you add unlimited household members and assign expenses to anyone - or mark them as shared (splits equally).
 
 One click to see individual or combined views.
 
@@ -82,7 +82,7 @@ Built with @v0: [INSERT_V0_TEMPLATE_URL]
 Light mode for daytime budgeting.
 Dark mode for late-night "where did my money go" sessions.
 
-Tallyr - personal finance tracking that respects your eyes.
+FakeFolio - personal finance tracking that respects your eyes.
 
 Template: [INSERT_V0_TEMPLATE_URL]
 ```
@@ -148,7 +148,7 @@ Try it yourself: [INSERT_V0_TEMPLATE_URL]
 ```
 I've been exploring what's possible with AI-assisted development, and I'm impressed.
 
-Built "Tallyr" - a personal finance tracker designed for couples who share expenses.
+Built "FakeFolio" - a personal finance tracker designed for couples who share expenses.
 
 The interesting part: the entire application was built conversationally with v0 by Vercel. No boilerplate. No fighting with configurations. Just describing what I wanted and iterating.
 
@@ -182,11 +182,11 @@ Full source on GitHub: [INSERT_GITHUB_URL]
 ## GitHub README
 
 ```markdown
-# Tallyr
+# FakeFolio
 
 A minimal, calm personal finance tracker designed for couples or housemates who share expenses.
 
-![Tallyr Screenshot](screenshot.png)
+![FakeFolio Screenshot](screenshot.png)
 
 ## Features
 
@@ -225,7 +225,7 @@ The easiest way to get started is to use the v0 template:
 1. Clone the repository:
    ```bash
    git clone [INSERT_GITHUB_URL]
-   cd tallyr
+   cd fake-folio
    ```
 
 2. Install dependencies:
@@ -250,7 +250,7 @@ By default, all data is stored locally in your browser's localStorage. This mean
 
 ### Optional Cloud Sync
 
-For users who want cross-device sync and data persistence, Tallyr supports optional Supabase integration:
+For users who want cross-device sync and data persistence, FakeFolio supports optional Supabase integration:
 
 1. Create a [Supabase](https://supabase.com) project
 2. Run the provided SQL schema (`scripts/004_simple_user_tables.sql`)
@@ -295,7 +295,7 @@ Building a Personal Finance App for Couples with v0 - A Template Walkthrough
 ```
 Managing shared finances as a couple is tricky. Most budgeting apps are designed for individuals, making it hard to track "yours, mine, and ours" expenses.
 
-I built Tallyr to solve this - a minimal, calm personal finance tracker with first-class support for household expense splitting. The entire app was built conversationally with v0, and I'm sharing it as a template for the community.
+I built FakeFolio to solve this - a minimal, calm personal finance tracker with first-class support for household expense splitting. The entire app was built conversationally with v0, and I'm sharing it as a template for the community.
 
 In this post, I'll walk through the key features, the technical decisions, and how v0 handled the implementation.
 ```
@@ -315,7 +315,7 @@ We needed:
 
 **2. The Solution**
 ```
-Tallyr addresses all of these with a simple model:
+FakeFolio addresses all of these with a simple model:
 - Add unlimited household members in Settings
 - Every expense has an "Assigned To" field: any member or Shared
 - Shared expenses split equally among all members
@@ -368,9 +368,9 @@ A calm personal finance tracker for households who share expenses
 
 **Description:**
 ```
-Tallyr is a minimal budget tracking app designed for households - couples, families, or housemates.
+FakeFolio is a minimal budget tracking app designed for households - couples, families, or housemates.
 
-Unlike traditional finance apps built for individuals, Tallyr understands that households have "yours, mine, and ours" expenses.
+Unlike traditional finance apps built for individuals, FakeFolio understands that households have "yours, mine, and ours" expenses.
 
 Key features:
 - Add unlimited household members
@@ -396,7 +396,7 @@ Free and open source.
 ```
 Hey there,
 
-I just published a new v0 template I've been working on: Tallyr.
+I just published a new v0 template I've been working on: FakeFolio.
 
 It's a personal finance tracker specifically designed for households - couples, families, or housemates who share expenses.
 

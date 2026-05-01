@@ -10,15 +10,20 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>
 }
 
-const DISMISSED_KEY = "tallyr-install-dismissed"
+const DISMISSED_KEY = "fakefolio-install-dismissed"
+const LEGACY_DISMISSED_KEY = "tallyr-install-dismissed"
 
 export function InstallPrompt() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null)
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    // Don't show again if previously dismissed
-    if (typeof window !== "undefined" && localStorage.getItem(DISMISSED_KEY)) return
+    if (typeof window === "undefined") return
+    if (!localStorage.getItem(DISMISSED_KEY) && localStorage.getItem(LEGACY_DISMISSED_KEY)) {
+      localStorage.setItem(DISMISSED_KEY, localStorage.getItem(LEGACY_DISMISSED_KEY)!)
+      localStorage.removeItem(LEGACY_DISMISSED_KEY)
+    }
+    if (localStorage.getItem(DISMISSED_KEY)) return
 
     const handler = (e: Event) => {
       e.preventDefault()
@@ -53,7 +58,7 @@ export function InstallPrompt() {
         <Download className="h-4 w-4 text-primary" />
       </div>
       <div className="flex flex-1 flex-col gap-1">
-        <p className="text-sm font-medium">Install Tallyr</p>
+        <p className="text-sm font-medium">Install FakeFolio</p>
         <p className="text-xs text-muted-foreground text-pretty">
           Add to your home screen for quicker access.
         </p>

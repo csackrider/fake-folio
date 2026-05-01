@@ -50,7 +50,7 @@ export function Sidebar() {
     <aside className="flex h-screen w-64 flex-col border-r border-border bg-sidebar px-4 py-6">
       <div className="mb-4 px-3">
         <h1 className="text-2xl font-semibold tracking-tight text-sidebar-foreground">
-          Tallyr
+          FakeFolio
         </h1>
         <p className="text-xs text-muted-foreground">Personal finance, simplified</p>
       </div>

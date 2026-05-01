@@ -20,7 +20,15 @@ export function EntryCommentsSection({ entry }: EntryCommentsProps) {
   const [newComment, setNewComment] = useState("")
   const [authorName, setAuthorName] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("tallyr-comment-author") || ""
+      const v = localStorage.getItem("fakefolio-comment-author")
+      if (v) return v
+      const legacy = localStorage.getItem("tallyr-comment-author")
+      if (legacy) {
+        localStorage.setItem("fakefolio-comment-author", legacy)
+        localStorage.removeItem("tallyr-comment-author")
+        return legacy
+      }
+      return ""
     }
     return ""
   })
@@ -53,7 +61,7 @@ export function EntryCommentsSection({ entry }: EntryCommentsProps) {
 
     // Remember chosen author
     if (typeof window !== "undefined" && authorName.trim()) {
-      localStorage.setItem("tallyr-comment-author", authorName.trim())
+      localStorage.setItem("fakefolio-comment-author", authorName.trim())
     }
   }
 

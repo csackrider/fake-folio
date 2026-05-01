@@ -21,7 +21,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Bill Reminders: See upcoming recurring charges on your dashboard",
       "Quick Entry: Press Cmd/Ctrl+N anywhere to add an entry instantly",
       "Entry Comments: Add notes and discussions to individual transactions",
-      "PWA Support: Install Tallyr as an app on your device",
+      "PWA Support: Install FakeFolio as an app on your device",
       "Cloud Sync: Optional Supabase integration for cross-device sync",
     ],
   },

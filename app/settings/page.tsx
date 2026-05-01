@@ -123,7 +123,7 @@ export default function SettingsPage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `tallyr-backup-${new Date().toISOString().split("T")[0]}.json`
+    a.download = `fakefolio-backup-${new Date().toISOString().split("T")[0]}.json`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -393,7 +393,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="flex items-center justify-between border-t pt-6 text-sm text-muted-foreground">
-        <span>Tallyr v{APP_VERSION}</span>
+        <span>FakeFolio v{APP_VERSION}</span>
         <ViewChangelogButton />
       </div>
     </div>

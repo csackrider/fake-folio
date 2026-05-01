@@ -19,15 +19,23 @@ import {
   type ChangelogEntry,
 } from "@/lib/version"
 
-const LAST_SEEN_VERSION_KEY = "tallyr-last-seen-version"
+const LAST_SEEN_VERSION_KEY = "fakefolio-last-seen-version"
+const LEGACY_LAST_SEEN_VERSION_KEY = "tallyr-last-seen-version"
 
 export function WhatsNewDialog() {
   const [open, setOpen] = useState(false)
   const [newChanges, setNewChanges] = useState<ChangelogEntry[]>([])
 
   useEffect(() => {
-    // Check if there are new changes to show
-    const lastSeen = localStorage.getItem(LAST_SEEN_VERSION_KEY)
+    let lastSeen = localStorage.getItem(LAST_SEEN_VERSION_KEY)
+    if (!lastSeen) {
+      const legacy = localStorage.getItem(LEGACY_LAST_SEEN_VERSION_KEY)
+      if (legacy) {
+        localStorage.setItem(LAST_SEEN_VERSION_KEY, legacy)
+        localStorage.removeItem(LEGACY_LAST_SEEN_VERSION_KEY)
+        lastSeen = legacy
+      }
+    }
     const changes = getChangesSinceVersion(lastSeen)
     
     if (changes.length > 0) {
@@ -50,7 +58,7 @@ export function WhatsNewDialog() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            What&apos;s New in Tallyr
+            What&apos;s New in FakeFolio
           </DialogTitle>
           <DialogDescription>
             Here&apos;s what&apos;s been added since you last visited

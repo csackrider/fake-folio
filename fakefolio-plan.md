@@ -21,7 +21,7 @@
 | Layer | Decision | Notes |
 |-------|----------|-------|
 | **Framework** | Next.js | Confirmed — downloaded from v0.app |
-| **Template** | [Tallyr Personal Finance Tracker](https://v0.app/templates/tallyr-personal-finance-tracker-wdqexTCLiHk) | v0.app community template by @heystu |
+| **Template** | [FakeFolio Personal Finance Tracker](https://v0.app/templates/tallyr-personal-finance-tracker-wdqexTCLiHk) | v0.app community template by @heystu |
 | **Database** | [Supabase](https://supabase.com) | Existing account. Used for cloud sync/auth. Template has built-in Supabase support. Falls back to localStorage if not configured. |
 | **Hosting** | [Vercel](https://vercel.com) | Via v0.app deployment. Free `.vercel.app` subdomain — no domain purchase needed. |
 | **Source Control** | [GitHub](https://github.com/csackrider/fake-folio) | Repo: `csackrider/fake-folio` |
@@ -77,7 +77,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ## Supabase Schema
 
-The Tallyr template supports optional Supabase cloud sync. Tables needed:
+The FakeFolio template supports optional Supabase cloud sync. Tables needed:
 
 ```sql
 -- Users handled by Supabase Auth
@@ -213,7 +213,7 @@ Use the AI-DLC phase orchestrators in Cursor to guide development:
 
 ## Open Questions / TBD
 
-- [x] ~~Does the Tallyr template export as a Next.js app or is it a single-file component?~~ **Confirmed: Next.js app.**
+- [x] ~~Does the FakeFolio template export as a Next.js app or is it a single-file component?~~ **Confirmed: Next.js app.**
 - [ ] Determine if seed data / test fixtures should be loaded via Playwright `beforeAll` hooks or managed separately in Supabase.
 - [ ] Decide on test user credentials strategy (env vars vs. Playwright fixtures).
 - [ ] Consider adding GitHub Actions CI workflow to run Playwright tests on push.
@@ -222,7 +222,7 @@ Use the AI-DLC phase orchestrators in Cursor to guide development:
 
 ## Resources
 
-- [Tallyr Template](https://v0.app/templates/tallyr-personal-finance-tracker-wdqexTCLiHk)
+- [FakeFolio Template](https://v0.app/templates/tallyr-personal-finance-tracker-wdqexTCLiHk)
 - [Supabase Docs](https://supabase.com/docs)
 - [Vercel Docs](https://vercel.com/docs)
 - [Playwright Docs](https://playwright.dev)

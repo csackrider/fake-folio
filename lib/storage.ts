@@ -11,33 +11,34 @@ import type {
 import { generateMockEntries } from "./mock-data"
 import { DEFAULT_BUDGET_CATEGORIES } from "./constants"
 
-const ENTRIES_KEY = "tallyr-entries"
-const BUDGET_KEY = "tallyr-budget"
-const SETTINGS_KEY = "tallyr-settings"
-const GOALS_KEY = "tallyr-goals"
-const NET_WORTH_ITEMS_KEY = "tallyr-networth-items"
-const NET_WORTH_SNAPSHOTS_KEY = "tallyr-networth-snapshots"
-const COMMENTS_KEY = "tallyr-comments"
+const ENTRIES_KEY = "fakefolio-entries"
+const BUDGET_KEY = "fakefolio-budget"
+const SETTINGS_KEY = "fakefolio-settings"
+const GOALS_KEY = "fakefolio-goals"
+const NET_WORTH_ITEMS_KEY = "fakefolio-networth-items"
+const NET_WORTH_SNAPSHOTS_KEY = "fakefolio-networth-snapshots"
+const COMMENTS_KEY = "fakefolio-comments"
 
-// Old keys from before the rename
-const OLD_ENTRIES_KEY = "calm-ledger-entries"
-const OLD_BUDGET_KEY = "calm-ledger-budget"
-const OLD_SETTINGS_KEY = "calm-ledger-settings"
-
-// Migrate data from old calm-ledger-* keys to tallyr-* keys
-function migrateOldKeys(): void {
+// Migrate calm-ledger-* and tallyr-* keys into fakefolio-* (one-time per key)
+function migrateLocalStorageKeys(): void {
   if (typeof window === "undefined") return
 
   const migrations = [
-    { old: OLD_ENTRIES_KEY, new: ENTRIES_KEY },
-    { old: OLD_BUDGET_KEY, new: BUDGET_KEY },
-    { old: OLD_SETTINGS_KEY, new: SETTINGS_KEY },
+    { old: "calm-ledger-entries", new: ENTRIES_KEY },
+    { old: "calm-ledger-budget", new: BUDGET_KEY },
+    { old: "calm-ledger-settings", new: SETTINGS_KEY },
+    { old: "tallyr-entries", new: ENTRIES_KEY },
+    { old: "tallyr-budget", new: BUDGET_KEY },
+    { old: "tallyr-settings", new: SETTINGS_KEY },
+    { old: "tallyr-goals", new: GOALS_KEY },
+    { old: "tallyr-networth-items", new: NET_WORTH_ITEMS_KEY },
+    { old: "tallyr-networth-snapshots", new: NET_WORTH_SNAPSHOTS_KEY },
+    { old: "tallyr-comments", new: COMMENTS_KEY },
   ]
 
   for (const { old: oldKey, new: newKey } of migrations) {
     const oldData = localStorage.getItem(oldKey)
     const newData = localStorage.getItem(newKey)
-    // Only migrate if old data exists and new key doesn't have real data yet
     if (oldData && !newData) {
       localStorage.setItem(newKey, oldData)
       localStorage.removeItem(oldKey)
@@ -65,7 +66,7 @@ function migrateAssignedTo(assignedTo: string): string {
 
 export function loadEntries(): Entry[] {
   if (typeof window === "undefined") return []
-  migrateOldKeys()
+  migrateLocalStorageKeys()
   const raw = localStorage.getItem(ENTRIES_KEY)
   if (raw) {
     try {
@@ -98,7 +99,7 @@ export function saveEntries(entries: Entry[]): void {
 
 export function loadBudgetCategories(): BudgetCategory[] {
   if (typeof window === "undefined") return []
-  migrateOldKeys()
+  migrateLocalStorageKeys()
   const raw = localStorage.getItem(BUDGET_KEY)
   if (raw) {
     try {
@@ -126,7 +127,7 @@ type OldSettings = {
 
 export function loadSettings(): AppSettings {
   if (typeof window === "undefined") return DEFAULT_SETTINGS
-  migrateOldKeys()
+  migrateLocalStorageKeys()
   const raw = localStorage.getItem(SETTINGS_KEY)
   if (raw) {
     try {
@@ -164,6 +165,7 @@ export function saveSettings(settings: AppSettings): void {
 // Goals
 export function loadGoals(): Goal[] {
   if (typeof window === "undefined") return []
+  migrateLocalStorageKeys()
   const raw = localStorage.getItem(GOALS_KEY)
   if (!raw) return []
   try {
@@ -181,6 +183,7 @@ export function saveGoals(goals: Goal[]): void {
 // Net Worth items
 export function loadNetWorthItems(): NetWorthItem[] {
   if (typeof window === "undefined") return []
+  migrateLocalStorageKeys()
   const raw = localStorage.getItem(NET_WORTH_ITEMS_KEY)
   if (!raw) return []
   try {
@@ -198,6 +201,7 @@ export function saveNetWorthItems(items: NetWorthItem[]): void {
 // Net Worth snapshots
 export function loadNetWorthSnapshots(): NetWorthSnapshot[] {
   if (typeof window === "undefined") return []
+  migrateLocalStorageKeys()
   const raw = localStorage.getItem(NET_WORTH_SNAPSHOTS_KEY)
   if (!raw) return []
   try {
@@ -215,6 +219,7 @@ export function saveNetWorthSnapshots(snapshots: NetWorthSnapshot[]): void {
 // Entry comments
 export function loadEntryComments(): EntryComment[] {
   if (typeof window === "undefined") return []
+  migrateLocalStorageKeys()
   const raw = localStorage.getItem(COMMENTS_KEY)
   if (!raw) return []
   try {

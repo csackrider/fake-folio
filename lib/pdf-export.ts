@@ -17,7 +17,7 @@ export async function exportInsightsPDF(
   // Title
   pdf.setFontSize(20)
   pdf.setTextColor(30, 30, 30)
-  pdf.text("Tallyr — Insights Report", 14, 20)
+  pdf.text("FakeFolio — Insights Report", 14, 20)
 
   // Date range
   pdf.setFontSize(10)
@@ -87,5 +87,5 @@ export async function exportInsightsPDF(
     // Skip charts if html2canvas fails
   }
 
-  pdf.save("tallyr-insights.pdf")
+  pdf.save("fakefolio-insights.pdf")
 }

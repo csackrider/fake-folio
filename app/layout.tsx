@@ -11,13 +11,13 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Tallyr — Personal Finance, Simplified',
+  title: 'FakeFolio — Personal Finance, Simplified',
   description: 'Track recurring charges, budgets, and spending with a calm, minimal interface.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Tallyr',
+    title: 'FakeFolio',
   },
   icons: {
     icon: [
@@ -54,7 +54,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=JSON.parse(localStorage.getItem("tallyr-settings")||"{}");var t=s.theme||"light";if(t==="system"){t=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`,
+            __html: `(function(){try{var r=localStorage.getItem("fakefolio-settings")||localStorage.getItem("tallyr-settings")||localStorage.getItem("calm-ledger-settings")||"{}";var s=JSON.parse(r);var t=s.theme||"light";if(t==="system"){t=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`,
           }}
         />
       </head>

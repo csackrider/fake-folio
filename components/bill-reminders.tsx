@@ -15,7 +15,8 @@ import { getUpcomingEntries } from "@/lib/finance"
 import { useData } from "@/components/data-provider"
 import { parseISO, differenceInDays, format } from "date-fns"
 
-const DISMISS_KEY_PREFIX = "tallyr-reminder-dismissed-"
+const DISMISS_KEY_PREFIX = "fakefolio-reminder-dismissed-"
+const LEGACY_DISMISS_KEY_PREFIX = "tallyr-reminder-dismissed-"
 
 /**
  * Shows recurring bills due in the next 7 days.
@@ -33,9 +34,10 @@ export function BillReminders() {
     // Filter out dismissed bills (dismissed within the last 30 days)
     return bills.filter((bill) => {
       if (typeof window === "undefined") return true
-      const dismissedAt = localStorage.getItem(
-        `${DISMISS_KEY_PREFIX}${bill.id}-${bill.date}`
-      )
+      const key = `${bill.id}-${bill.date}`
+      const dismissedAt =
+        localStorage.getItem(`${DISMISS_KEY_PREFIX}${key}`) ||
+        localStorage.getItem(`${LEGACY_DISMISS_KEY_PREFIX}${key}`)
       if (!dismissedAt) return true
       const daysAgo = differenceInDays(new Date(), new Date(dismissedAt))
       return daysAgo > 30
@@ -43,10 +45,9 @@ export function BillReminders() {
   }, [filteredEntries])
 
   const dismiss = (id: string, date: string) => {
-    localStorage.setItem(
-      `${DISMISS_KEY_PREFIX}${id}-${date}`,
-      new Date().toISOString()
-    )
+    const key = `${id}-${date}`
+    localStorage.setItem(`${DISMISS_KEY_PREFIX}${key}`, new Date().toISOString())
+    localStorage.removeItem(`${LEGACY_DISMISS_KEY_PREFIX}${key}`)
     forceUpdate((n) => n + 1)
   }
 

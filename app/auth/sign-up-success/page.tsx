@@ -8,7 +8,7 @@ export default function SignUpSuccessPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <div className="text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">Tallyr</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">FakeFolio</h1>
             <p className="text-sm text-muted-foreground">Personal finance, simplified</p>
           </div>
           <Card>
