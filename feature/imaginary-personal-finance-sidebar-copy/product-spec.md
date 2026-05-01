@@ -1,4 +1,4 @@
-# Product Spec - Update sidebar tagline to "Imaginary Personal finance, simplified"
+# Product Spec - Update tagline to "Imaginary Personal finance, simplified"
 
 **AIDLC phase:** Plan  
 **Audience:** Product, engineering leads, stakeholders - product language only (no implementation or stack). Unresolved product questions should be asked in chat first; this file records decisions after they are made.
@@ -9,7 +9,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Feature** | Update Personal finance, simplified on the sidebar to Imaginary Personal finance, simplified |
+| **Feature** | Update all current "Personal finance, simplified" copy to "Imaginary Personal finance, simplified" |
 | **Status** | Draft / Awaiting approval |
 | **Author** | Cursor Cloud Agent |
 | **Created** | 2026-05-01 |
@@ -20,25 +20,25 @@
 
 ### Problem statement
 
-The product currently presents the tagline "Personal finance, simplified" in the app shell sidebar. Issue #2 requests changing that wording to "Imaginary Personal finance, simplified." Without a clear product decision on the exact surfaces and final capitalization, the product risks inconsistent branding across the experience.
+The product currently presents the tagline "Personal finance, simplified" across multiple user-facing surfaces, including the app shell sidebar and authentication pages. The approved product direction is to update every current use of that exact text to "Imaginary Personal finance, simplified" so the experience reflects the intended branding consistently.
 
 ### Who it's for
 
 - Existing FakeFolio users who see the sidebar while using the app
-- Prospective or newly authenticated users if the approved scope includes additional brand surfaces that already reuse the same tagline
+- Prospective or newly authenticated users who see the authentication screens now or in a future auth-enabled deployment
 - Product stakeholders who want the product's brand language to match the current direction
 
 ### Current experience (baseline)
 
-Today the sidebar shows the tagline "Personal finance, simplified." Matching copy also appears on authentication screens, which creates a scope question: the issue names the sidebar specifically, but the same tagline is reused elsewhere in the product.
+Today the sidebar shows the tagline "Personal finance, simplified." The same text also appears on the sign-in, sign-up, and sign-up success screens. That reuse means a partial rename would leave visible brand inconsistency across the experience.
 
 ## Outcomes & business impact
 
 ### Desired outcomes
 
-- The approved tagline is updated from the old wording to the new wording requested in issue #2
-- Users see a consistent product tagline everywhere included in the approved scope
-- Product approval of exact wording and scope happens before implementation work begins
+- The tagline "Personal finance, simplified" is replaced everywhere it currently appears with "Imaginary Personal finance, simplified"
+- Users see a consistent product tagline across the sidebar and authentication screens
+- Product approval clearly defines whether browser/PWA metadata is part of this rename before implementation work begins
 
 ### Success criteria (for Validate)
 
@@ -46,20 +46,21 @@ These tie directly to the scorecard in `/ship`. Each should be testable or evide
 
 | # | Criterion | How we'll verify |
 |---|-----------|------------------|
-| 1 | The final approved tagline text is recorded in the Product Spec decisions and matches the issue outcome the stakeholder wants. | Review approved Product Spec and linked issue context. |
-| 2 | Every user-facing surface included in the approved scope shows the final approved tagline, and no approved-scope surface keeps the old wording. | Manual UI review of the approved surfaces plus repository copy search during implementation/review. |
-| 3 | Surfaces outside the approved scope remain unchanged. | Manual UI review against the approved scope list. |
+| 1 | The final approved tagline text is recorded as exactly `Imaginary Personal finance, simplified`. | Review approved Product Spec decisions and linked issue context. |
+| 2 | The sidebar shows `Imaginary Personal finance, simplified` instead of `Personal finance, simplified`. | Manual UI review of the app shell. |
+| 3 | The sign-in, sign-up, and sign-up success screens show `Imaginary Personal finance, simplified` instead of `Personal finance, simplified`. | Manual UI review of those screens, including auth-ready environments. |
+| 4 | Browser/PWA metadata is either explicitly included or explicitly excluded from the approved scope before implementation starts. | Review approved Product Spec scope and decisions. |
 
 ### Business impact
 
-This is a small but visible brand-consistency improvement. It reduces mismatch between the product wording stakeholders want and the wording users currently see in the app.
+This is a small but visible brand-consistency improvement. It reduces mismatch between the product wording stakeholders want and the wording users currently see in the app and auth entry points.
 
 ## User experience & scenarios
 
 ### Key scenarios
 
-1. **Returning app user** - A signed-in user opens the product and sees the updated tagline in the sidebar instead of the old wording.
-2. **New or returning auth user (if included in scope)** - A user visiting sign-in, sign-up, or sign-up success sees the same approved tagline as the rest of the product.
+1. **Returning app user** - A user opens the product and sees "Imaginary Personal finance, simplified" in the sidebar instead of the old wording.
+2. **Auth-ready user journey** - A user visiting sign-in, sign-up, or sign-up success sees the same approved tagline as the rest of the product, even if auth is being prepared ahead of Supabase rollout.
 3. **Stakeholder review** - A reviewer checks the approved surfaces and confirms the copy is consistent and matches the requested wording.
 
 ### Experience principles
@@ -72,8 +73,9 @@ This is a small but visible brand-consistency improvement. It reduces mismatch b
 
 ### In scope
 
-- Confirming the final approved replacement copy for the tagline
-- Confirming whether the change applies only to the sidebar or to every user-facing surface that currently uses the same tagline
+- Updating every current instance of the exact text "Personal finance, simplified" in user-facing product UI
+- The sidebar tagline
+- The sign-in, sign-up, and sign-up success page taglines
 - Updating the product spec so the implementation phase has clear, testable acceptance criteria
 
 ### Out of scope
@@ -81,23 +83,28 @@ This is a small but visible brand-consistency improvement. It reduces mismatch b
 - Renaming the product itself from "FakeFolio"
 - Redesigning the sidebar layout or navigation
 - Broader messaging or marketing copy refreshes unrelated to this tagline
+- Any copy that does not exactly match "Personal finance, simplified"
 - Technical implementation details, architecture, or testing design
 
 ### Dependencies on other teams or features
 
-- Product-owner confirmation of final scope and exact wording
+- Product-owner confirmation of whether browser/PWA metadata should be renamed in this same change
 
 ## Constraints (non-technical where possible)
 
 - The final copy must fit naturally in compact header areas such as the sidebar
-- The approved wording should align with the stakeholder request captured in issue #2
-- The scope must be explicit enough that implementation does not accidentally miss or overreach beyond intended surfaces
+- The approved wording should align exactly with the stakeholder request captured in issue #2
+- Auth surfaces should be updated now even though Supabase is not currently in use, so they are ready for a future auth rollout
+- The scope must explicitly state whether browser/PWA metadata is in or out so implementation does not accidentally miss or overreach beyond intended surfaces
 
 ## Decisions (optional)
 
 | Date | Decision |
 |------|----------|
 | 2026-05-01 | Working feature slug set to `imaginary-personal-finance-sidebar-copy` to align the Plan artifact with issue #2. |
+| 2026-05-01 | Replace the exact text `Personal finance, simplified` with `Imaginary Personal finance, simplified` everywhere it currently appears in user-facing UI. |
+| 2026-05-01 | Approved UI scope includes the sidebar plus the sign-in, sign-up, and sign-up success pages. |
+| 2026-05-01 | Auth pages remain in scope even before Supabase is enabled so they are ready for future auth rollout. |
 
 ## Related documents
 
