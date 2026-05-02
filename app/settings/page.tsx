@@ -387,7 +387,7 @@ export default function SettingsPage() {
       <CsvImportDialog open={csvOpen} onOpenChange={setCsvOpen} />
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={!hasChanges}>
+        <Button data-testid="settings-save" onClick={handleSave} disabled={!hasChanges}>
           Save
         </Button>
       </div>

@@ -246,7 +246,9 @@ export function AddEntryDialog({ open, onOpenChange, editEntry }: AddEntryDialog
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit">{isEditing ? "Save Changes" : "Add Entry"}</Button>
+            <Button type="submit" data-testid="add-entry-submit">
+              {isEditing ? "Save Changes" : "Add Entry"}
+            </Button>
           </div>
         </form>
       </DialogContent>
