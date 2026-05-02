@@ -17,9 +17,9 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { useData } from "@/components/data-provider"
 import { useAuth } from "@/components/auth-provider"
+import { APP_NAME, APP_TAGLINE } from "@/lib/branding"
 import type { PersonFilter } from "@/lib/types"
 
 const NAV_ITEMS = [
@@ -50,9 +50,9 @@ export function Sidebar() {
     <aside className="flex h-screen w-64 flex-col border-r border-border bg-sidebar px-4 py-6">
       <div className="mb-4 px-3">
         <h1 className="text-2xl font-semibold tracking-tight text-sidebar-foreground">
-          FakeFolio
+          {APP_NAME}
         </h1>
-        <p className="text-xs text-muted-foreground">Personal finance, simplified</p>
+        <p className="text-xs text-muted-foreground">{APP_TAGLINE}</p>
       </div>
 
       <div className="mb-6 px-1">
