@@ -5,13 +5,14 @@ import { Toaster } from 'sonner'
 import { DataProvider } from '@/components/data-provider'
 import { AuthProvider } from '@/components/auth-provider'
 import { AppShell } from '@/components/app-shell'
+import { APP_TITLE } from '@/lib/branding'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'FakeFolio — Personal Finance, Simplified',
+  title: APP_TITLE,
   description: 'Track recurring charges, budgets, and spending with a calm, minimal interface.',
   manifest: '/manifest.json',
   appleWebApp: {

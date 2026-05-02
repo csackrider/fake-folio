@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { APP_NAME, APP_TAGLINE } from '@/lib/branding'
 import { Mail } from 'lucide-react'
 import Link from 'next/link'
 
@@ -8,8 +9,8 @@ export default function SignUpSuccessPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <div className="text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">FakeFolio</h1>
-            <p className="text-sm text-muted-foreground">Personal finance, simplified</p>
+            <h1 className="text-2xl font-semibold tracking-tight">{APP_NAME}</h1>
+            <p className="text-sm text-muted-foreground">{APP_TAGLINE}</p>
           </div>
           <Card>
             <CardHeader className="text-center">

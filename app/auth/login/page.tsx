@@ -1,6 +1,7 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
+import { APP_NAME, APP_TAGLINE } from '@/lib/branding'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -12,7 +13,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function LoginPage() {
@@ -20,7 +20,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,8 +60,8 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <div className="text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">FakeFolio</h1>
-            <p className="text-sm text-muted-foreground">Personal finance, simplified</p>
+            <h1 className="text-2xl font-semibold tracking-tight">{APP_NAME}</h1>
+            <p className="text-sm text-muted-foreground">{APP_TAGLINE}</p>
           </div>
           <Card>
             <CardHeader>
