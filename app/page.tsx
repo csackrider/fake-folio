@@ -34,10 +34,15 @@ export default function HomePage() {
   const upcoming = getUpcomingEntries(filteredEntries, 30)
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8" data-testid="dashboard-root">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-balance">Dashboard</h1>
+          <h1
+            className="text-2xl font-semibold tracking-tight text-balance"
+            data-testid="dashboard-heading"
+          >
+            Dashboard
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">Your financial overview at a glance</p>
         </div>
         <div className="flex items-center gap-2">

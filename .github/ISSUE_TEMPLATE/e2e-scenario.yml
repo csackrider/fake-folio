@@ -1,0 +1,37 @@
+name: E2E scenario (Gherkin)
+description: Acceptance criteria in Gherkin for Playwright BDD (copy into features/ when implementing).
+title: "[e2e] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use **stable step wording** — step definitions must match exactly. Prefer `@smoke` for PR-critical paths.
+        When implementing, add `features/<area>-gh-<issue-number>.feature` and step files under `features/steps/`, then run `npm run test:bdd`.
+
+  - type: textarea
+    id: gherkin
+    attributes:
+      label: Gherkin
+      description: "One Feature block with Scenarios (Given / When / Then). For freeform issues, paste the same text inside a gherkin fenced code block."
+      value: |
+        Feature: Short title
+          As a …
+          I want …
+          So that …
+
+          @smoke
+          Scenario: One clear outcome
+            Given …
+            When …
+            Then …
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes (optional)
+      description: Test data, routes, or links to product/tech specs.
+    validations:
+      required: false

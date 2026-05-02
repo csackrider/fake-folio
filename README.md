@@ -25,6 +25,20 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## E2E tests (Playwright BDD)
+
+Gherkin lives under `features/`; step definitions under `features/steps/`; page objects under `tests/pages/`. Generated specs go to `.features-gen/` (gitignored).
+
+```bash
+npx playwright install   # once per machine; CI installs browsers automatically
+npm run test:bdd         # bddgen && playwright test (starts dev server via playwright.config.ts)
+npm run test:bdd:ui      # optional Playwright UI mode
+```
+
+The full runnable suite is all `features/*.feature` files (navigation, dashboard, Activity, Settings, Budget, Goals, Recurring, Insights/Splits/Net Worth/Month Review). Run `npm run test:bdd` to execute every scenario after `bddgen`.
+
+Optional env vars are documented in [`tests/.env.test.example`](tests/.env.test.example). See [`AGENTS.md`](AGENTS.md) for selector conventions, the What’s New harness, and auth notes.
+
 ## Learn More
 
 To learn more, take a look at the following resources:

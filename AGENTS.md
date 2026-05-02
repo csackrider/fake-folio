@@ -23,6 +23,15 @@ Convention: `feature/<kebab-slug>/`
 - **Install:** `git submodule update --init --recursive && npm ci`
 - **Dev server:** `npm run dev`
 - **Production build:** `npm run build`
+- **E2E (BDD):** `npx playwright install` (first time), then `npm run test:bdd` — runs `bddgen` then Playwright; uses `playwright.config.ts` `webServer` to start `npm run dev` unless `CI` is set (GitHub Actions uses the same script).
+
+## E2E / Playwright
+
+- **Stack:** `@playwright/test` + `playwright-bdd` — Gherkin in `features/**/*.feature`, steps in `features/steps/**/*.ts`, generated tests in `.features-gen/` (ignored by git).
+- **Agent skills:** Use **`playwright-testing`** and **`agent-testing`** from AI-DLC when authoring or refactoring suites from GitHub issues (paste Gherkin into the issue or use the **E2E scenario** issue template).
+- **Selectors:** Prefer `getByRole` / `getByLabel`; add **`data-testid`** on stable anchors for flows you automate (see dashboard: `dashboard-root`, `dashboard-heading`; Activity search: `activity-search`; Add Entry submit: `add-entry-submit`; Settings save: `settings-save`).
+- **BDD harness:** [`features/steps/fixtures.ts`](features/steps/fixtures.ts) extends the Playwright `context` fixture with `addInitScript` that sets `fakefolio-last-seen-version` to the current app version so the **What’s New** dialog ([`components/whats-new-dialog.tsx`](components/whats-new-dialog.tsx)) does not block E2E. Scenarios that need empty goals use `Given I have cleared saved goals from storage` to register an additional init script before the first navigation.
+- **Auth / data:** With no `NEXT_PUBLIC_SUPABASE_*`, the app uses **`localStorage`** — smoke flows need no credentials. For Supabase-backed E2E later, use a dedicated test user and **GitHub Actions secrets** (or a local untracked env file); never commit passwords. See [`tests/.env.test.example`](tests/.env.test.example).
 
 ## Skills location
 

@@ -8,3 +8,10 @@ node_modules/
 .next/
 .env*.local
 .DS_Store
+
+# Playwright + playwright-bdd
+.features-gen/
+test-results/
+playwright-report/
+blob-report/
+cucumber-report/

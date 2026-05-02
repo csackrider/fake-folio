@@ -64,14 +64,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 - [ ] Add the Supabase environment variables in Vercel project settings
 - [ ] Deploy and verify `https://fakefolio.vercel.app` is live
 
-### 6. Playwright Setup
-- [ ] Install Playwright:
-  ```bash
-  npm init playwright@latest
-  ```
-- [ ] Configure `playwright.config.ts` to point to `https://fakefolio.vercel.app`
-- [ ] Create test directory structure (see testing section below)
-- [ ] Write and run initial smoke test to confirm app is reachable
+### 6. Playwright BDD setup
+- [x] Install `@playwright/test` and `playwright-bdd`; add `npm run test:bdd` / `test:bdd:ui` (see `package.json`).
+- [x] Configure `playwright.config.ts` with `defineBddConfig`, local `webServer` (`npm run dev`), and optional `BASE_URL` override (e.g. `https://fakefolio.vercel.app`) via [`tests/.env.test.example`](tests/.env.test.example).
+- [x] Create `features/`, `features/steps/`, `tests/pages/`, and initial smoke feature (`features/dashboard-smoke-gh-0.feature`).
+- [x] GitHub Actions: `.github/workflows/playwright.yml` runs `npm run test:bdd` on pushes and PRs to `main`.
 
 ---
 
@@ -161,39 +158,40 @@ create policy "Users can manage their own snapshots"
 
 ## Playwright Test Plan
 
-The goal is to demonstrate real-world Playwright testing patterns against a live deployed app.
+The goal is to demonstrate real-world Playwright testing patterns (BDD in Gherkin, executed via Playwright). CI runs against a **local dev server** started by Playwright; you can override `BASE_URL` for a deployed app when needed.
 
-### Test Directory Structure
-```
+### Directory structure (BDD + page objects)
+
+```text
+features/
+  *.feature                    # Gherkin — name new files e.g. features/<area>-gh-<issue>.feature
+  steps/
+    fixtures.ts                # createBdd(test) — Given / When / Then
+    *.steps.ts                 # step definitions → call page objects
 tests/
-├── auth/
-│   ├── login.spec.ts
-│   ├── signup.spec.ts
-│   └── logout.spec.ts
-├── transactions/
-│   ├── add-transaction.spec.ts
-│   ├── edit-transaction.spec.ts
-│   └── delete-transaction.spec.ts
-├── budgets/
-│   └── budget-management.spec.ts
-├── goals/
-│   └── goals-tracking.spec.ts
-├── dashboard/
-│   └── dashboard-summary.spec.ts
-└── fixtures/
-    └── test-data.ts
+  pages/                       # Page Object classes
+.features-gen/                 # generated specs (gitignored; bddgen)
 ```
 
-### Key Test Scenarios
-- [ ] **Auth flow** — sign up, log in, log out
-- [ ] **Add a transaction** — fill form, submit, verify it appears in the list
-- [ ] **Edit a transaction** — modify amount/category, verify update
-- [ ] **Delete a transaction** — confirm deletion dialog, verify removal
-- [ ] **Budget progress** — add budget, add spending, verify progress bar updates
-- [ ] **Goals** — create a savings goal, log a contribution, verify progress
-- [ ] **Dashboard summary** — verify income/expense totals reflect added data
-- [ ] **CSV import** — upload a test CSV, verify transactions are created
-- [ ] **Dark/light mode toggle** — verify theme switching
+Plain `*.spec.ts` files (no Gherkin) can be added later in a separate folder or Playwright `project` if you want both styles; avoid mixing generators into the same output directory.
+
+### Key Test Scenarios (BDD in `features/`)
+
+- [x] **Dashboard smoke** — [`features/dashboard-smoke-gh-0.feature`](features/dashboard-smoke-gh-0.feature) (`@smoke`)
+- [x] **Sidebar navigation** — [`features/navigation.feature`](features/navigation.feature); all main nav targets and main `h1` titles (`@smoke` outline)
+- [x] **Add a transaction** — [`features/dashboard-add-entry.feature`](features/dashboard-add-entry.feature); add expense from dashboard, assert on Activity
+- [x] **Activity search** — [`features/activity-search.feature`](features/activity-search.feature); seeded merchant filter
+- [x] **Budget overview** — [`features/budget-overview.feature`](features/budget-overview.feature); default categories visible
+- [x] **Goals empty state** — [`features/goals-empty.feature`](features/goals-empty.feature); cleared `fakefolio-goals` + empty UI
+- [x] **Recurring overview** — [`features/recurring-overview.feature`](features/recurring-overview.feature); seeded recurring merchant
+- [x] **Insights / Splits / Net Worth / Month Review smoke** — [`features/insights-splits-networth-monthreview.feature`](features/insights-splits-networth-monthreview.feature)
+- [x] **Settings theme (dark)** — [`features/settings-theme.feature`](features/settings-theme.feature); draft theme + Save + `html.dark`
+- [ ] **Auth flow** — skipped for localStorage-only demo (no Supabase E2E)
+- [ ] **Edit a transaction** — not yet covered in Gherkin
+- [ ] **Delete a transaction** — not yet covered in Gherkin
+- [ ] **Budget progress** — add budget + spending + bar (not yet covered)
+- [ ] **Goals create / contribute** — wizard not yet automated
+- [ ] **CSV import** — upload fixture CSV (not yet covered)
 
 ---
 
@@ -214,9 +212,9 @@ Use the AI-DLC phase orchestrators in Cursor to guide development:
 ## Open Questions / TBD
 
 - [x] ~~Does the FakeFolio template export as a Next.js app or is it a single-file component?~~ **Confirmed: Next.js app.**
-- [ ] Determine if seed data / test fixtures should be loaded via Playwright `beforeAll` hooks or managed separately in Supabase.
-- [ ] Decide on test user credentials strategy (env vars vs. Playwright fixtures).
-- [ ] Consider adding GitHub Actions CI workflow to run Playwright tests on push.
+- [ ] **Seed data:** Prefer isolated `localStorage` per test context for localStorage mode; use `beforeAll` / fixtures to seed via UI or `page.addInitScript` when needed. For Supabase mode later, consider a dedicated test project and API or SQL seed, not production data.
+- [x] **Test user credentials:** Default CI paths need **no secrets** (anonymous + localStorage). For Supabase auth E2E, use **env vars + GitHub Actions secrets** and document names in `tests/.env.test.example`.
+- [x] **CI:** `.github/workflows/playwright.yml` runs Playwright BDD on `push` / `pull_request` to `main`.
 
 ---
 
